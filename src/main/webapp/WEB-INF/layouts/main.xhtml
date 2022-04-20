@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html lang="#{idiomaController.locale}">
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://xmlns.jcp.org/jsf/html"
+        xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+        xmlns:f="http://xmlns.jcp.org/jsf/core"
+        xmlns:p="http://primefaces.org/ui"
+        locale="#{idiomaController.locale}">
+    <h:head>
+        <meta charset="UTF-8"/>
+        <title>#{titulo}</title>
+        <ui:insert name="head"/>
+    </h:head>
+    <h:body>
+        <h:form>
+            <p:menubar>
+                <p:menuitem value="#{msg['menu.item.inicio']}" outcome="index" icon="pi pi-fw pi-home"/>
+                <p:menuitem value="#{msg['menu.item.crear']}" outcome="form" icon="pi pi-fw pi-plus"/>
+                <p:menuitem icon="pi pi-fw pi-flag">
+                    <p:selectOneMenu value="#{idiomaController.lenguaje}"
+                                     valueChangeListener="#{idiomaController.seleccionar}"
+                                     onchange="submit()"
+                    >
+                        <f:selectItem itemLabel="#{msg['menu.item.cambiar.lenguaje']}" itemValue="es"/>
+                        <f:selectItems value="#{idiomaController.lenguajesSoportados}"/>
+                    </p:selectOneMenu>
+                </p:menuitem>
+            </p:menubar>
+        </h:form>
+
+        <p:card >
+            <p:messages
+                    globalOnly="true"
+                    closable="true"/>
+            <ui:insert name="content"/>
+            <p:divider/>
+            <footer style="clear: both;">
+                <!--<h:graphicImage value="/resources/img/jakarta-ee-logo-white.svg" alt="JakartaEE 9"/>-->
+                <p>
+                    <h:outputText value="#{msg['footer.texto.autor']}"/>
+                </p>
+                <ui:insert name="js"/>
+            </footer>
+        </p:card>
+    </h:body>
+</f:view>
+</html>
+

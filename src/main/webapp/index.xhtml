@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/layouts/main.xhtml">
+    <ui:define name="content">
+        <p:panelGrid columns="1" >
+            <f:facet name="header">
+                <h:outputText value="#{titulo}"/>
+            </f:facet>
+            <h:form id="crearForm">
+                <p:commandButton value="#{msg['menu.item.crear']}" action="form.xhtml" class="p-my-2"/>
+            </h:form>
+            <h:outputText value="#{msg['producto.texto.noexiste']}" rendered="#{empty listado}"
+                          class="alert alert-warning"/>
+            <p:dataTable value="#{listado}" var="prod" rendered="#{not empty listado}">
+                <p:column headerText="#{msg['producto.id']}">
+                    <h:outputText value="#{prod.id}"/>
+                </p:column>
+                <p:column headerText="#{msg['producto.nombre']}">
+                    <h:outputText value="#{prod.nombre}"/>
+                </p:column>
+                <p:column headerText="#{msg['producto.sku']}">
+                    <h:outputText value="#{prod.sku}"/>
+                </p:column>
+                <p:column headerText="#{msg['producto.precio']}">
+                    <h:outputText value="#{prod.precio}"/>
+                </p:column>
+                <p:column headerText="#{msg['producto.fechaRegistro']}">
+                    <h:outputText value="#{prod.fechaRegistro}">
+                        <f:convertDateTime type="localDate" pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="#{msg['producto.categoria']}">
+                    <h:outputText value="#{prod.categoria.nombre}"/>
+                </p:column>
+                <p:column headerText="#{msg['producto.boton.editar']}">
+                    <h:form id="editarForm">
+                        <p:commandButton value="#{msg['producto.boton.editar']}" action="#{productoController.editar(prod.id)}"
+                                         class="ui-button-success"/>
+                    </h:form>
+                </p:column>
+                <p:column headerText="#{msg['producto.boton.editar']}">
+                    <h:form id="editarFormLink">
+                        <p:linkButton value="#{msg['producto.boton.editar']}" outcome="form" class="ui-button-info">
+                            <f:param name="id" value="#{prod.id}"/>
+                        </p:linkButton>
+                    </h:form>
+                </p:column>
+                <p:column headerText="#{msg['producto.boton.eliminar']}">
+                    <h:form id="eliminarForm">
+                        <p:commandButton value="#{msg['producto.boton.eliminar']}" action="#{productoController.eliminar(prod)}"
+                                         onclick="return confirm('¿Esta seguro que quiere eliminar?')"
+                                         class="ui-button-danger"/>
+                    </h:form>
+                </p:column>
+            </p:dataTable>
+        </p:panelGrid>
+    </ui:define>
+</ui:composition>
