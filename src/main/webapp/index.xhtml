@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
@@ -6,16 +5,51 @@
                 xmlns:p="http://primefaces.org/ui"
                 template="/WEB-INF/layouts/main.xhtml">
     <ui:define name="content">
-        <p:panelGrid columns="1" >
-            <f:facet name="header">
+        <p:card >
+            <f:facet name="title">
                 <h:outputText value="#{titulo}"/>
             </f:facet>
+            <p:divider/>
             <h:form id="crearForm">
-                <p:commandButton value="#{msg['menu.item.crear']}" action="form.xhtml" class="p-my-2"/>
+                <p:commandButton value="#{msg['menu.item.crear']}"
+                                 onclick="PF('dialogForm').show()"
+                                 class="p-my-2"
+                                 icon="pi pi-plus-circle"
+                >
+                    <p:resetInput target="formProducto"/>
+                </p:commandButton>
             </h:form>
-            <h:outputText value="#{msg['producto.texto.noexiste']}" rendered="#{empty listado}"
+            <h:outputText value="#{msg['producto.texto.noexiste']}" rendered="#{empty productoController.listado}"
                           class="alert alert-warning"/>
-            <p:dataTable value="#{listado}" var="prod" rendered="#{not empty listado}">
+            <h:form>
+                <div class="p-field p-grid p-my-2">
+                    <label for="textoBuscar" class="p-col-fixed" style="width: 100px">
+                        Buscar
+                    </label>
+                    <div class="p-col">
+                        <p:inputText id="textoBuscar"
+                                     value="#{productoController.textoBuscar}"
+                                     placeholder="Buscar...">
+                            <p:ajax listener="#{productoController.filtrar}"
+                                    event="keyup"
+                                    update="mostrar tabla"/>
+                        </p:inputText>
+                    </div>
+                    <div class="p-col">
+                        <h:outputText id="mostrar" value="#{productoController.textoBuscar}"/>
+                    </div>
+                </div>
+            </h:form>
+            <p:dataTable id="tabla"
+                         value="#{productoController.listado}"
+                         var="prod" rendered="#{not empty productoController.listado}"
+                         style="max-width: 65%;"
+                         rows="5"
+                         paginator="true"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                         rowsPerPageTemplate="5,10,{ShowAll|'All'}"
+            >
                 <p:column headerText="#{msg['producto.id']}">
                     <h:outputText value="#{prod.id}"/>
                 </p:column>
@@ -38,25 +72,39 @@
                 </p:column>
                 <p:column headerText="#{msg['producto.boton.editar']}">
                     <h:form id="editarForm">
-                        <p:commandButton value="#{msg['producto.boton.editar']}" action="#{productoController.editar(prod.id)}"
-                                         class="ui-button-success"/>
-                    </h:form>
-                </p:column>
-                <p:column headerText="#{msg['producto.boton.editar']}">
-                    <h:form id="editarFormLink">
-                        <p:linkButton value="#{msg['producto.boton.editar']}" outcome="form" class="ui-button-info">
-                            <f:param name="id" value="#{prod.id}"/>
-                        </p:linkButton>
+                        <p:commandButton value="#{msg['producto.boton.editar']}"
+                                         action="#{productoController.editar(prod.id)}"
+                                         class="ui-button-success"
+                                         onclick="PF('dialogForm').show()"
+                                         icon="pi pi-save"
+                                         update="formProducto"
+                        >
+                            <p:resetInput target="formProducto"/>
+                        </p:commandButton>
                     </h:form>
                 </p:column>
                 <p:column headerText="#{msg['producto.boton.eliminar']}">
                     <h:form id="eliminarForm">
-                        <p:commandButton value="#{msg['producto.boton.eliminar']}" action="#{productoController.eliminar(prod)}"
+                        <p:commandButton value="#{msg['producto.boton.eliminar']}"
+                                         action="#{productoController.eliminar(prod)}"
                                          onclick="return confirm('¿Esta seguro que quiere eliminar?')"
-                                         class="ui-button-danger"/>
+                                         class="ui-button-danger"
+                                         update="tabla"
+                                         icon="pi pi-trash"
+                        />
                     </h:form>
                 </p:column>
             </p:dataTable>
-        </p:panelGrid>
+            <p:dialog header="#{productoController.producto.id>0?msg['producto.boton.editar']:msg['producto.boton.crear']} #{msg['producto.texto']}"
+                      widgetVar="dialogForm"
+                      minHeight="200"
+                      minWidth="500"
+                      showEffect="fade"
+                      modal="true"
+            >
+                <p:ajax event="close" update="formProducto" listener="#{productoController.cerrarDialogo}"/>
+                <ui:include src="form.xhtml"/>
+            </p:dialog>
+        </p:card>
     </ui:define>
 </ui:composition>

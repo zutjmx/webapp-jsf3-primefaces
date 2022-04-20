@@ -15,4 +15,5 @@ public interface ProductoService {
     void eliminar(Long id);
     List<Categoria> listarCategorias();
     Optional<Categoria> porIdCategoria(Long id);
+    List<Producto> listarPorNombre(String nombre);
 }

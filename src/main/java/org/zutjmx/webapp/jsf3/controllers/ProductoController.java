@@ -1,5 +1,6 @@
 package org.zutjmx.webapp.jsf3.controllers;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.Model;
 import jakarta.enterprise.inject.Produces;
@@ -30,6 +31,16 @@ public class ProductoController {
     @Inject
     private FacesContext facesContext;
 
+    private List<Producto> listado;
+
+    private String textoBuscar;
+
+    @PostConstruct
+    public void init() {
+        this.listado = service.listar();
+        producto = new Producto();
+    }
+
     @Produces
     @Model
     public String titulo() {
@@ -37,15 +48,15 @@ public class ProductoController {
         return bundle.getString("producto.texto.titulo");
     }
 
-    @Produces
+    /*@Produces
     @RequestScoped
     @Named("listado")
     public List<Producto> findAll() {
         return service.listar();
-    }
+    }*/
 
-    @Produces
-    @Model
+    //@Produces
+    //@Model
     public Producto producto() {
         this.producto = new Producto();
         if (id != null && id > 0) {
@@ -62,12 +73,13 @@ public class ProductoController {
         return service.listarCategorias();
     }
 
-    public String editar(Long id) {
+    public void editar(Long id) {
         this.id = id;
-        return "form.xhtml";
+        producto();
+        //return "form.xhtml";
     }
 
-    public String guardar() {
+    public void guardar() {
         System.out.println(producto);
         if (producto.getId() != null && producto.getId()>0) {
             facesContext.addMessage(null,new FacesMessage(String.format(bundle.getString("producto.mensaje.editar"),producto.getNombre())));
@@ -75,13 +87,25 @@ public class ProductoController {
             facesContext.addMessage(null,new FacesMessage(String.format(bundle.getString("producto.mensaje.crear"),producto.getNombre())));
         }
         service.guardar(producto);
-        return "index.xhtml?faces-redirect=true";
+        listado = service.listar();
+        producto = new Producto();
+        //return "index.xhtml";
     }
 
-    public String eliminar(Producto producto) {
+    public void eliminar(Producto producto) {
         service.eliminar(producto.getId());
         facesContext.addMessage(null,new FacesMessage(String.format(bundle.getString("producto.mensaje.eliminar"),producto.getNombre())));
-        return "index.xhtml?faces-redirect=true";
+        listado = service.listar();
+        //return "index.xhtml";
+    }
+
+    public void filtrar() {
+        this.listado = service.listarPorNombre(this.textoBuscar);
+    }
+
+    public void cerrarDialogo() {
+        System.out.println(":: Cerrando la ventana de dialogo ::");
+        producto = new Producto();
     }
 
     public Long getId() {
@@ -90,5 +114,29 @@ public class ProductoController {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public List<Producto> getListado() {
+        return listado;
+    }
+
+    public void setListado(List<Producto> listado) {
+        this.listado = listado;
+    }
+
+    public String getTextoBuscar() {
+        return textoBuscar;
+    }
+
+    public void setTextoBuscar(String textoBuscar) {
+        this.textoBuscar = textoBuscar;
+    }
+
+    public Producto getProducto() {
+        return producto;
+    }
+
+    public void setProducto(Producto producto) {
+        this.producto = producto;
     }
 }
